@@ -3,8 +3,21 @@ pipeline {
 
     stages {
         stage('Build') {
+            agent {
+                docker {
+                    image 'node:18-alpine' // Use Node.js 18 Alpine image
+                    reuseNode true // Reuse the same node for this stage
+                }
+            }
             steps {
-                sh ' echo "Hello World"'
+                sh '''
+                    ls -la
+                    node -v
+                    npm -v
+                    npm ci
+                    npm run build
+                    ls -la
+                '''
             }
         }
     }
