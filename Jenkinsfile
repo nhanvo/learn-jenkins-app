@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs 'LocalNodeJs'
-    }
-
     stages {
         stage('Build') {
             steps {
