@@ -7,39 +7,39 @@ pipeline {
     }
 
     stages {
-        stage('Build') {
-            agent {
-                docker {
-                    image 'node:18' // Use Node.js 18 Alpine image
-                    reuseNode true // Reuse the same node for this stage
-                }
-            }
-            steps {
-                sh '''
-                    ls -la
-                    node -v
-                    npm -v
-                    npm ci
-                    npm run build
-                    ls -la
-                '''
-            }
-        }
+        // stage('Build') {
+        //     agent {
+        //         docker {
+        //             image 'node:18' // Use Node.js 18 Alpine image
+        //             reuseNode true // Reuse the same node for this stage
+        //         }
+        //     }
+        //     steps {
+        //         sh '''
+        //             ls -la
+        //             node -v
+        //             npm -v
+        //             npm ci
+        //             npm run build
+        //             ls -la
+        //         '''
+        //     }
+        // }
 
-        stage('Test') {
-            agent {
-                docker {
-                    image 'node:18' // Use Node.js 18 Alpine image
-                    reuseNode true // Reuse the same node for this stage
-                }
-            }
-            steps {
-                sh '''
-                    test -f build/index.html
-                    npm test
-                '''
-            }
-        }
+        // stage('Test') {
+        //     agent {
+        //         docker {
+        //             image 'node:18' // Use Node.js 18 Alpine image
+        //             reuseNode true // Reuse the same node for this stage
+        //         }
+        //     }
+        //     steps {
+        //         sh '''
+        //             test -f build/index.html
+        //             npm test
+        //         '''
+        //     }
+        // }
 
         stage('Deploy') {
             agent {

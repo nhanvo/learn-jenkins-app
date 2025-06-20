@@ -12,11 +12,11 @@ function App() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn Jenkins on Udemy
+          Learn Jenkins on Udemy with NhanVT
         </a>
       </header>
       <p>
-          Application version: 1
+          Application version: 1.0
       </p>
     </div>
   );
