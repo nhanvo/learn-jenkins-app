@@ -1,52 +1,70 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'LocalNodeJs'
+    }
+
     stages {
         stage('Build') {
-            agent {
-                docker {
-                    image 'node:18-alpine' // Use Node.js 18 Alpine image
-                    reuseNode true // Reuse the same node for this stage
-                }
-            }
             steps {
                 sh '''
                     ls -la
-                    node -v
-                    npm -v
+                    node --version
+                    npm --version
                     npm ci
                     npm run build
                     ls -la
                 '''
             }
         }
-
-        stage('Test') {
+        stage('Tests') {
+            parallel {
+                  stage('Unit Test') {
+                      steps {
+                        sh '''
+                            echo "Test stage"
+                            npm test
+                        '''
+                        }
+                        post {
+                            always {
+                                junit 'jest-results/junit.xml'                                
+                            }
+                        }
+                    }
+                    stage('E2E') {
+                        steps {
+                            sh '''                   
+                                npm install -g serve
+                                serve -s build &
+                                sleep 10
+                                npx playwright install
+                                npx playwright test --reporter=html
+                            '''
+                        }
+                        post {
+                            always {
+                                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+                            }
+                        }
+                    }
+            }
+        }
+        // Deployment stage
+        stage('Deploy') {
             agent {
                 docker {
-                    image 'node:18-alpine' // Use Node.js 18 Alpine image
-                    reuseNode true // Reuse the same node for this stage
+                    image 'node:18-alpine'
+                    reuseNode true
                 }
             }
             steps {
                 sh '''
-                    test -f build/index.html
-                    npm test
+                    npm install netlify-cli
+                    node_modules/.bin/netlify --version
                 '''
             }
-        }
-    }
-
-    post {
-        always {
-            archiveArtifacts artifacts: 'build/**', allowEmptyArchive: true
-            junit 'test-results/junit.xml'
-        }
-        success {
-            echo 'Build and tests completed successfully.'
-        }
-        failure {
-            echo 'Build or tests failed.'
         }
     }
 }
