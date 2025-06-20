@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        NETLIFY_SITE_ID = 'e2495a87-3179-47d3-b65a-791c724f92f1' // Use Jenkins credentials for Netlify site ID
+        }
+
     stages {
         stage('Build') {
             agent {
